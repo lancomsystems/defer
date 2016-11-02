@@ -1,7 +1,5 @@
-# Stomp Library
+# DeferLibrary
 
-[![Build Status](https://travis-ci.org/lancomsystems/stomp.svg?branch=master)](https://travis-ci.org/lancomsystems/stomp)
-[![license](https://img.shields.io/github/license/lancomsystems/stomp.svg)](https://github.com/lancomsystems/stomp/blob/master/LICENSE)
-[![Maven Central](https://img.shields.io/maven-central/v/de.lancom.systems.stomp/stomp-core.svg)](https://mvnrepository.com/artifact/de.lancom.systems.stomp)
-
-This is a client library for communication with message brokers according to the [STOMP specification](https://stomp.github.io/).
+[![Build Status](https://travis-ci.org/lancomsystems/defer.svg?branch=master)](https://travis-ci.org/lancomsystems/defer)
+[![license](https://img.shields.io/github/license/lancomsystems/defer.svg)](https://github.com/lancomsystems/defer/blob/master/LICENSE)
+[![Maven Central](https://img.shields.io/maven-central/v/de.lancom.systems.defer/defer.svg)](https://mvnrepository.com/artifact/de.lancom.systems.defer)
