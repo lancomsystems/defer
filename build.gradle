@@ -76,16 +76,16 @@ uploadArchives {
             }
 
             pom.project {
-                name 'Stomp Library'
+                name 'Defer Library'
 
                 packaging 'jar'
-                description 'A Stomp client library'
-                url 'https://github.com/lancomsystems/stomp'
+                description 'Defer library'
+                url 'https://github.com/lancomsystems/defer'
 
                 scm {
-                    connection 'scm:git:https://github.com/lancomsystems/stomp.git'
-                    developerConnection 'scm:git:https://github.com/lancomsystems/stomp.git'
-                    url 'https://github.com/lancomsystems/stomp/'
+                    connection 'scm:git:https://github.com/lancomsystems/defer.git'
+                    developerConnection 'scm:git:https://github.com/lancomsystems/defer.git'
+                    url 'https://github.com/lancomsystems/defer/'
                 }
 
                 licenses {
