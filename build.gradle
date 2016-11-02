@@ -1,0 +1,143 @@
+group 'de.lancom.systems.defer'
+version '0.0.1'
+
+apply plugin: 'java'
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.10'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+def conf = ext
+
+conf['publish.url'] = rootProject.findProperty("publishUrl") ?: 'sonatype'
+conf['publish.user'] = rootProject.findProperty("publishUser")
+conf['publish.password'] = rootProject.findProperty("publishPassword")
+conf['signing.password'] = rootProject.findProperty("signingPassword")
+if (conf['signing.password'] != null) {
+    conf['signing.keyId'] = '72819AEA'
+    conf['signing.secretKeyRingFile'] = rootProject.file('signing.pgp')
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+signing {
+    required { gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            if (conf['publish.url'] == 'sonatype') {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
+                    if (conf['publish.user'] != null && conf['publish.password'] != null) {
+                        authentication(userName: conf['publish.user'], password: conf['publish.password'])
+                    }
+                }
+
+                snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
+                    if (conf['publish.user'] != null && conf['publish.password'] != null) {
+                        authentication(userName: conf['publish.user'], password: conf['publish.password'])
+                    }
+                }
+            } else {
+                repository(url: conf['publish.url']) {
+                    if (conf['publish.user'] != null && conf['publish.password'] != null) {
+                        authentication(userName: conf['publish.user'], password: conf['publish.password'])
+                    }
+                }
+            }
+
+            pom.project {
+                name 'Stomp Library'
+
+                packaging 'jar'
+                description 'A Stomp client library'
+                url 'https://github.com/lancomsystems/stomp'
+
+                scm {
+                    connection 'scm:git:https://github.com/lancomsystems/stomp.git'
+                    developerConnection 'scm:git:https://github.com/lancomsystems/stomp.git'
+                    url 'https://github.com/lancomsystems/stomp/'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'frederic_kneier'
+                        name 'Frederic Kneier'
+                        email 'Frederic@Kneier.net'
+                    }
+                }
+            }
+        }
+    }
+}
+
+pmd {
+    toolVersion = '5.5.1'
+    sourceSets = [sourceSets.main]
+    ruleSetFiles = files("${rootProject.projectDir}/pmd-rulesets.xml")
+}
+
+findbugs {
+    toolVersion = '3.0.1'
+    sourceSets = [sourceSets.main]
+    excludeFilter = file("${rootProject.projectDir}/findbugs-exclude.xml")
+}
+
+checkstyle {
+    toolVersion = '7.1'
+    sourceSets = [sourceSets.main]
+    configFile = file("${rootProject.projectDir}/checkstyle.xml")
+}
+
+afterEvaluate {
+    tasks.withType(org.gradle.api.plugins.quality.Pmd) {
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    tasks.withType(org.gradle.api.plugins.quality.FindBugs) {
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+}
+
